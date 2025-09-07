@@ -1,0 +1,710 @@
+INSTRUCTIONS: Copy everything below this line and save as ExecutiveSummaryGenerator.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Meeting Summary Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .setup-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+
+        .setup-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border-color 0.3s;
+        }
+
+        .api-key-input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .upload-section {
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .upload-section:hover {
+            background: #f8f9fa;
+            border-color: #2980b9;
+        }
+
+        .upload-section.dragover {
+            background: #e3f2fd;
+            border-color: #1976d2;
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .upload-subtext {
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .summary-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .summary-title {
+            color: #2c3e50;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .summary-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .summary-content h3 {
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            font-size: 1.3em;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        .summary-content ul {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        .summary-content li {
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            color: #856404;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .upload-section {
+                padding: 30px 20px;
+            }
+            
+            .summary-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Executive Meeting Summary Generator</h1>
+            <p>Transform meeting transcripts into executive-ready summaries using AI</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>📋 Quick Setup Instructions</h3>
+                <ol>
+                    <li><strong>Get OpenAI API Key:</strong> Go to <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></li>
+                    <li><strong>Create Account:</strong> Sign up and add billing information</li>
+                    <li><strong>Generate Key:</strong> Click "Create new secret key" and copy it</li>
+                    <li><strong>Paste Below:</strong> Enter your API key in the field below</li>
+                    <li><strong>Upload & Generate:</strong> Upload your transcript and get instant summaries!</li>
+                </ol>
+            </div>
+
+            <!-- API Key Setup -->
+            <div class="setup-section">
+                <h2>🔑 OpenAI API Key Setup</h2>
+                <input type="password" id="apiKey" class="api-key-input" placeholder="Enter your OpenAI API key (sk-...)">
+                <button class="btn" onclick="saveApiKey()">💾 Save API Key</button>
+                <button class="btn btn-secondary" onclick="toggleApiKeyVisibility()">👁️ Show/Hide Key</button>
+            </div>
+
+            <!-- File Upload -->
+            <div class="upload-section" onclick="document.getElementById('fileInput').click()" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Click here or drag & drop your meeting transcript</div>
+                <div class="upload-subtext">Supports .txt files • Maximum 10MB</div>
+                <input type="file" id="fileInput" class="file-input" accept=".txt" onchange="handleFileSelect(event)">
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>🤖 AI is analyzing your transcript and generating executive summary...</p>
+                <p><small>This usually takes 30-60 seconds</small></p>
+            </div>
+
+            <!-- Messages -->
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <!-- Summary Display -->
+            <div class="summary-section" id="summarySection">
+                <div class="summary-header">
+                    <div>
+                        <h2 class="summary-title">📊 Executive Summary</h2>
+                        <p id="summaryInfo">Generated from your meeting transcript</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-success" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                        <button class="btn btn-secondary" onclick="downloadAsText()">💾 Download as Text</button>
+                        <button class="btn" onclick="regenerateSummary()">🔄 Regenerate</button>
+                    </div>
+                </div>
+                <div class="summary-content" id="summaryContent"></div>
+            </div>
+
+            <!-- New Upload Button -->
+            <div style="text-align: center; margin-top: 30px;" id="newUploadSection" style="display: none;">
+                <button class="btn" onclick="resetApp()">📄 Process Another Transcript</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTranscript = '';
+        let apiKey = localStorage.getItem('openai_api_key') || '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (apiKey) {
+                document.getElementById('apiKey').value = apiKey;
+            }
+            setupDragAndDrop();
+        });
+
+        // Save API Key
+        function saveApiKey() {
+            const key = document.getElementById('apiKey').value.trim();
+            if (!key) {
+                showError('Please enter your OpenAI API key');
+                return;
+            }
+            if (!key.startsWith('sk-')) {
+                showError('Invalid API key format. OpenAI keys start with "sk-"');
+                return;
+            }
+            localStorage.setItem('openai_api_key', key);
+            apiKey = key;
+            showSuccess('API key saved successfully!');
+        }
+
+        // Toggle API Key Visibility
+        function toggleApiKeyVisibility() {
+            const input = document.getElementById('apiKey');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // Setup Drag and Drop
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFile(files[0]);
+                }
+            });
+        }
+
+        // Handle File Selection
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        // Handle File Processing
+        function handleFile(file) {
+            // Validate file
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                showError('Please upload a .txt file only. For .docx or .pdf files, please convert them to .txt first.');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                showError('File size must be less than 10MB');
+                return;
+            }
+
+            if (!apiKey) {
+                showError('Please enter your OpenAI API key first');
+                return;
+            }
+
+            // Read file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentTranscript = e.target.result;
+                if (!currentTranscript.trim()) {
+                    showError('The file appears to be empty');
+                    return;
+                }
+                generateSummary(currentTranscript);
+            };
+            reader.readAsText(file);
+        }
+
+        // Generate Summary using OpenAI
+        async function generateSummary(transcript) {
+            showLoading(true);
+            hideMessages();
+
+            const systemPrompt = `You are an executive assistant specialized in creating concise, strategic summaries for C-level executives.
+
+Generate a structured executive summary with the following sections:
+1. **Executive Summary** – 3-5 sentence high-level overview
+2. **Key Insights** – major themes and takeaways  
+3. **Decisions Made** – agreements, approvals, strategic choices
+4. **Action Items** – clear next steps, responsibilities, deadlines
+5. **Risks & Concerns** – issues, blockers, challenges
+6. **Opportunities & Ideas** – innovation points, growth suggestions
+7. **Analysis/Recommendations** – patterns, insights, strategic recommendations
+
+Format requirements:
+- Use bullet points for clarity under each section
+- Keep sentences short and impactful  
+- Focus on executive-level strategic insights
+- Avoid verbose details
+- Make it scan-friendly for busy leaders`;
+
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4',
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: `Please analyze this meeting transcript and create an executive summary:\n\n${transcript}` }
+                        ],
+                        max_tokens: 1500,
+                        temperature: 0.3
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || `API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const summary = data.choices[0].message.content;
+
+                displaySummary(summary);
+                showSuccess('Executive summary generated successfully!');
+
+            } catch (error) {
+                console.error('Error:', error);
+                if (error.message.includes('API key')) {
+                    showError('Invalid API key. Please check your OpenAI API key.');
+                } else if (error.message.includes('quota')) {
+                    showError('OpenAI quota exceeded. Please check your billing settings.');
+                } else if (error.message.includes('rate limit')) {
+                    showError('Rate limit reached. Please wait a moment and try again.');
+                } else {
+                    showError(`Error generating summary: ${error.message}`);
+                }
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Display Summary
+        function displaySummary(summary) {
+            const summaryContent = document.getElementById('summaryContent');
+            const summarySection = document.getElementById('summarySection');
+            const newUploadSection = document.getElementById('newUploadSection');
+
+            // Format the summary with better HTML
+            const formattedSummary = formatSummaryHTML(summary);
+            summaryContent.innerHTML = formattedSummary;
+
+            summarySection.style.display = 'block';
+            newUploadSection.style.display = 'block';
+
+            // Scroll to summary
+            summarySection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Format Summary as HTML
+        function formatSummaryHTML(summary) {
+            let formatted = summary;
+
+            // Convert section headers to HTML headers
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<h3>$1</h3>');
+            
+            // Convert bullet points to HTML lists
+            const lines = formatted.split('\n');
+            let html = '';
+            let inList = false;
+
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    html += '<br>';
+                    continue;
+                }
+
+                if (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) {
+                    if (!inList) {
+                        html += '<ul>';
+                        inList = true;
+                    }
+                    html += `<li>${line.substring(1).trim()}</li>`;
+                } else if (line.includes('<h3>')) {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    html += line;
+                } else {
+                    if (inList) {
+                        html += '</ul>';
+                        inList = false;
+                    }
+                    html += `<p>${line}</p>`;
+                }
+            }
+
+            if (inList) {
+                html += '</ul>';
+            }
+
+            return html;
+        }
+
+        // Copy to Clipboard
+        async function copyToClipboard() {
+            const summaryContent = document.getElementById('summaryContent');
+            const text = summaryContent.innerText;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showSuccess('Summary copied to clipboard!');
+            } catch (error) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccess('Summary copied to clipboard!');
+            }
+        }
+
+        // Download as Text
+        function downloadAsText() {
+            const summaryContent = document.getElementById('summaryContent');
+            const text = summaryContent.innerText;
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'executive_summary.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showSuccess('Summary downloaded as text file!');
+        }
+
+        // Regenerate Summary
+        function regenerateSummary() {
+            if (!currentTranscript) {
+                showError('No transcript available to regenerate');
+                return;
+            }
+            
+            const customInstructions = prompt('Enter additional instructions for the summary (optional):');
+            let transcript = currentTranscript;
+            
+            if (customInstructions && customInstructions.trim()) {
+                transcript = `Additional Instructions: ${customInstructions}\n\nOriginal Transcript:\n${currentTranscript}`;
+            }
+            
+            generateSummary(transcript);
+        }
+
+        // Reset App
+        function resetApp() {
+            document.getElementById('summarySection').style.display = 'none';
+            document.getElementById('newUploadSection').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+            currentTranscript = '';
+            hideMessages();
+        }
+
+        // Show Loading
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        // Show Error
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show Success
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Hide Messages
+        function hideMessages() {
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
