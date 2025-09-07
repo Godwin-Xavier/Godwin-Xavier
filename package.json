@@ -1,0 +1,24 @@
+{
+  "name": "executive-meeting-summary-generator",
+  "version": "1.0.0",
+  "description": "Executive Meeting Summary Generator - Internal Application Platform",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && python app.py",
+    "client": "cd frontend && npm start",
+    "install-all": "npm install && cd frontend && npm install && cd ../backend && pip install -r ../requirements.txt",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "meeting-summary",
+    "openai",
+    "executive",
+    "transcripts"
+  ],
+  "author": "Godwin Xavier S",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
