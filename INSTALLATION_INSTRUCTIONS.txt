@@ -1,0 +1,67 @@
+EXECUTIVE MEETING SUMMARY GENERATOR - INSTALLATION GUIDE
+=========================================================
+
+WHAT YOU'RE LOOKING AT:
+This folder contains your complete Executive Meeting Summary Generator application.
+
+BEFORE YOU START:
+1. You need an OpenAI API key (get it from platform.openai.com)
+2. You need Python 3.8+ and Node.js installed on your computer
+
+FOLDER STRUCTURE:
+├── backend/                 (Server files)
+├── frontend/               (Web interface files)  
+├── requirements.txt        (Python dependencies)
+├── package.json           (Project configuration)
+├── .env.example           (Configuration template)
+└── Documentation files
+
+STEP-BY-STEP SETUP:
+
+STEP 1: PREPARE YOUR API KEY
+1. Go to https://platform.openai.com
+2. Create account and get API key (starts with sk-)
+3. Add billing information and set spending limit ($20/month recommended)
+
+STEP 2: INSTALL SOFTWARE (if not already done)
+1. Install Python from https://python.org (check "Add to PATH")
+2. Install Node.js from https://nodejs.org (LTS version)
+3. Restart computer after installation
+
+STEP 3: CONFIGURE THE APP
+1. Copy ".env.example" and rename copy to ".env"
+2. Open ".env" file in Notepad
+3. Replace "your_openai_api_key_here" with your actual API key
+4. Save the file
+
+STEP 4: INSTALL DEPENDENCIES
+1. Open Command Prompt (Windows) or Terminal (Mac)
+2. Navigate to this folder: cd path/to/ExecutiveSummaryApp
+3. Run: npm run install-all
+4. Wait 5-10 minutes for installation
+
+STEP 5: START THE APPLICATION
+1. In same command prompt, run: npm run dev
+2. Wait for servers to start
+3. Open browser to: http://localhost:3000
+4. Start uploading transcripts!
+
+DAILY USAGE:
+- To start: Open command prompt → navigate to folder → npm run dev
+- To stop: Press Ctrl+C in command prompt
+
+TROUBLESHOOTING:
+- "Command not found": Restart computer, check software installation
+- "API disconnected": Check your API key and internet connection
+- "Port in use": Close other applications, restart computer
+
+COSTS:
+- Each summary costs approximately $0.10-$0.50
+- Monitor usage at platform.openai.com
+
+SUPPORT:
+- Check all documentation files included
+- Verify each step was completed correctly
+- Ensure OpenAI account has credits
+
+Your Executive Meeting Summary Generator is ready to transform meeting transcripts into professional summaries!
